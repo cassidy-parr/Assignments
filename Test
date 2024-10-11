@@ -1,0 +1,177 @@
+//******************************************************************************
+//# Author:           Cassidy Parr
+//# Assignment:       A02 (CS161B)
+//# Date:           October 5, 2024
+//# Description:      This program will give the user the option to create a file name using this program. It will then prompt the user to enter thier first and last name, if the assignment is late, thier student id, and the file name. The program will then copy thier responses into a singl char array where each input will be followed by a _. The end result of this process is that the user now has a file name to use based of the information that they entered.
+//There are not calculations in this program, but there is conversions from int to string then to cstring
+//# Input:            option as a integer, lName as a char array, fName as a char array, lateFlag as a bool, studentID as a char array, fileName as a char array, hours as an int, minutes as an int
+//# Output:           welcome message, display menu, encodeFileName as a char array, goodbye message
+//# Sources:          Assignment 1 specifications, convert int to string replit and strcpy() sample replit as mentioned in assignment guidelines, and week 2 zybooks chapter 10
+//#                    
+//#*****************************************************************************
+
+#include <iostream>
+#include <cstring>
+#include <limits>
+using namespace std;
+
+void welcome();
+void displayMenu();
+void readOption(char &option);
+void convertLower(char name[ ]);
+void encode(char encodeFileName[]);  
+void readInput(char fName[], char lName[], bool &lateFlag);
+void readInput(char parsedID[], char fileName[]);
+void readTime(char strTime[]);
+
+int main() { 
+  char option;
+  char encodeFileName[100];
+  
+  welcome();
+  displayMenu();
+  readOption(option);
+  while(option == 'e'|| option == 'E'){
+    encode(encodeFileName);
+    cout << endl << "Your encoded file name is " << encodeFileName << endl <<endl;
+    cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
+    displayMenu();
+    readOption(option);
+  }
+  cout << endl << "Thank you for using my fileName generator program!" << endl;
+
+ return 0;       
+}
+
+
+void welcome(){
+cout << "Welcome to my fileName encoding program!" << endl;
+  }
+
+
+void displayMenu(){
+  cout << endl << "Please pick an option below:" << endl;
+  cout << "(e) Encode a file name" << endl;
+  cout << "(q) Quit" << endl;
+}
+
+
+void readOption(char &option){
+
+  cin.get(option);
+  while(option != 'e'&& option != 'E' && option != 'q' && option != 'Q'){
+    cout << "Invalid option! Please try again!" << endl;
+    cin.clear(); // Clear so that readOption can loop again after telling user thier first file name
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    cin.get(option);}
+  
+}
+
+
+void convertLower(char name[ ]){
+  for(int i = 0; i < strlen(name); i++){
+    name[i] = tolower(name[i]); }
+}
+
+
+void encode(char *encodeFileName){
+  const int MAXCHAR = 100;
+  char fName[MAXCHAR]= "";
+  char lName[MAXCHAR]= "";
+  bool lateFlag;
+  char parsedID[MAXCHAR]= "";
+  char fileName[MAXCHAR]= ""; 
+  char strTime[MAXCHAR]= "";
+
+  cout << endl << "This program is going to ask you a few questions and use them to generate an encoded fileName based on your answers." << endl << endl;
+  
+  readInput(fName, lName, lateFlag);
+  strcpy(encodeFileName, lName);
+  strcat(encodeFileName, "_");
+  strcat(encodeFileName, fName);
+  strcat(encodeFileName, "_"); 
+  
+  if(lateFlag){
+    strcat(encodeFileName, "LATE_");
+  }
+  readInput(parsedID, fileName);
+  strcat(encodeFileName, parsedID);
+  strcat(encodeFileName, "_");
+  readTime(strTime);
+  strcat(encodeFileName, strTime);
+  strcat(encodeFileName, "_");
+  strcat(encodeFileName, fileName);
+}
+
+
+void readInput(char fName[], char lName[], bool &lateFlag){ 
+  string late = "";                     
+cout << "Enter your last name: ";
+  cin >> lName;
+  convertLower(lName);
+  
+  cout << endl << "Enter your first name: ";
+  cin >> fName;
+  convertLower(fName);
+  
+  cout << endl << "Was your assignment Late (y/n)? ";
+  cin >> late;
+  if(late == "y" || late == "Y"){
+    lateFlag = true;
+  }
+  else if(late == "n" || late == "N"){
+    lateFlag = false;
+  }
+  else{
+    while (late != "y" && late != "Y" && late != "n" && late != "N" ){
+    cout << endl <<"Invalid input, please enter (y/n): " ;
+      cin.clear();//clearing past input
+      cin.ignore(100, '\n');
+      cin >> late;
+    if(late == "y" || late == "Y"){
+      lateFlag = true;
+    }
+    else if(late == "n" || late == "N"){
+      lateFlag = false;
+    }}
+  }                                 
+}  
+
+
+void readInput(char parsedID[], char fileName[]){
+  char studentID[20]="";
+  cout << endl << "Enter your Student-ID (format: 222-22-2222): ";
+  cin >> studentID;
+  strncpy(parsedID, (studentID +7 ), 5);
+  
+  cout << endl << "Enter the file name(It should be formatted like fileName.cpp): ";
+  cin.clear();//clearing past input
+  cin.ignore(100, '\n');
+  cin >> fileName; 
+}
+
+
+void readTime(char *strTime){
+    int hours = 0;
+    int mins = 0;
+    char discard;
+  
+    cout << endl << "Enter the time submitted(Should be in the format xx:xx): ";
+     cin >> hours >> discard >> mins;
+
+    while(!cin || discard != ':')
+      {
+        cout << "Invalid input! Please try again!!" << endl;
+        cin.clear();
+        cin.ignore(100, '\n');
+        cin >> hours >> discard >> mins;
+      }   
+
+    while (hours > 24 || hours < 1||mins > 60 || mins < 1){  
+      cout << "Invalid input, enter an appropriate time in the range(1-24:0-60): ";
+      cin >> hours >> discard >> mins;
+    }
+
+    strncpy(strTime, to_string(hours).c_str(),10);
+    strcat(strTime, to_string(mins).c_str());
+}
